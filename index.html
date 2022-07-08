@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+</head>
+<body>
+    <div id="welcome-section">
+        <header>
+            <h1 class="chat-room-title">Chat Room</h1>
+        </header>
+        <form class="auth-form">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+            <div class="button-row">
+                <button type="submit">Login</button>
+                <button type="submit">Register</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="chat-room-section">
+        <header>
+            <h1 class="chat-room-title">Chat Room</h1>
+            <button type="submit" class="logout-btn">Logout</button>
+        </header>
+        <form>
+            <input type="text" name="message-input" id="message-input">
+            <button type="submit">Post</button>
+        </form>
+    </div>
+</body>
+</html>
