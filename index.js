@@ -7,11 +7,13 @@ const http = require('http');
 const httpServer = http.createServer(app);
 const mysql = require('mysql');
 
-// Server port.
 const port = process.env.PORT || 3000;
 httpServer.listen(port, () => {
     console.log('Listening at Port: ', port);
 });
+
+const { Server } = require('socket.io');
+const io = new Server(httpServer);
 
 const path = require('path');
 
@@ -34,4 +36,11 @@ const db = mysql.createConnection(connectionOptions);
 db.connect(function (err) {
     if (err) throw err;
     console.log('Database connected');
+});
+
+io.on('connection', (socket) => {
+    console.log('User connected.');
+    socket.on('disconnect', () => {
+        console.log('User disconnected.');
+    });
 });
