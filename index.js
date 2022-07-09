@@ -1,4 +1,4 @@
-// To access variable in .env.
+// To access variables in .env.
 require('dotenv').config();
 
 const express = require('express');
@@ -43,4 +43,21 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected.');
     });
+
+    // User authentication.
+    socket.on('authentication', () => {
+        // TODO: Add authentication.
+        
+        // TODO: change user id.
+        socket.emit('switchPage', 0);
+    });
+
+    // User logout.
+    socket.on('logout', () => {
+        socket.emit('switchPage', -1);
+    });
+
+    // TODO: Post Messages.
+
+    // TODO: Warning.
 });
