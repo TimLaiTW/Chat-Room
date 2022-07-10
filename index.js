@@ -45,11 +45,17 @@ io.on('connection', (socket) => {
     });
 
     // User authentication.
-    socket.on('authentication', () => {
-        // TODO: Add authentication.
-        
-        // TODO: change user id.
-        socket.emit('switchPage', 0);
+    socket.on('authentication', async (userInfo) => {
+        let userId = -1;
+        if(userInfo.action === 'login'){
+            userId = await login(socket, userInfo.username, userInfo.password);
+        }else {
+            userId = await register(socket, userInfo.username, userInfo.password);
+        }
+        // TODO: Just for testing. change the user id.
+        if(userId != -1){
+            socket.emit('switchPage', userId);
+        }
     });
 
     // User logout.
@@ -57,7 +63,58 @@ io.on('connection', (socket) => {
         socket.emit('switchPage', -1);
     });
 
-    // TODO: Post Messages.
+    // TODO: Post Messages func.
 
-    // TODO: Warning.
+    // TODO: Warning func.
 });
+
+async function login(socket, username, password){
+    const userId = await getUserId(username, password);
+    if(userId == -1){
+        socket.emit('warning', 'Username or password is wrong.');
+    }
+
+    return userId;
+}
+
+async function register(socket, username, password){
+    const nameUsed = await usernameHasBeenUsed(username);
+    if(nameUsed){
+        socket.emit('warning', 'Username has been used.');
+        return -1;
+    }
+
+    const query = `INSERT INTO users(name, password) values('${username}', '${password}')`;
+    await mysqlQuery(query);
+    const userId = await getUserId(username, password);
+    return userId;
+}
+
+// Return user id if exists.
+async function getUserId(username, password){
+    const query = `SELECT id FROM users WHERE name = '${username}' and password = '${password}'`;
+    const result = await mysqlQuery(query);
+    const parseResult = JSON.parse(JSON.stringify(result));
+    if(parseResult[0] != undefined){
+        return parseResult[0].id;
+    }
+
+    return -1;
+}
+
+// Check if the username was used.
+async function usernameHasBeenUsed(username){
+    const query = `SELECT name FROM users WHERE name = '${username}'`;
+    const result = await mysqlQuery(query);
+    return result.length > 0 ? true : false;
+}
+
+// Processing mysql query.
+const mysqlQuery = (query) => {
+    return new Promise( resolve => {
+        db.query(query, (err, result) => {
+            if (err) throw err;
+            resolve(result);
+        })
+    });
+}
