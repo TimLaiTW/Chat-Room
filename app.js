@@ -9,7 +9,7 @@ $(function() {
         e.preventDefault();
         const username = $('#username').val();
         const password = $('#password').val();
-        const action = $(this).attr('value') == 'login' ? 'login' : 'register';
+        const action = $(this).attr('value');
         const userInfo = {
             username, password, action
         };
