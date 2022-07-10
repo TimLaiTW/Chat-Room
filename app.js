@@ -4,12 +4,17 @@ const socket = io("http://localhost:3000");
 let userId = -1;
 
 $(function() {
-    // User authentication with name and pwd.
+    // Authentication with username and pwd.
     $('.auth-submit-btn').click(function(e){
         e.preventDefault();
-        // TODO: Do different thing with different button value.
-        // TODO: emit with user info.
-        socket.emit('authentication');
+        const username = $('#username').val();
+        const password = $('#password').val();
+        const action = $(this).attr('value') == 'login' ? 'login' : 'register';
+        const userInfo = {
+            username, password, action
+        };
+        
+        socket.emit('authentication', userInfo);
     });
 
     // User logout.
@@ -22,6 +27,7 @@ $(function() {
 
 });
 
+// Change pages
 socket.on('switchPage', (id) => {
     userId = id;
 
@@ -38,4 +44,7 @@ socket.on('switchPage', (id) => {
     }
 });
 
-// TODO: add Warning function.
+// Warning 
+socket.on('warning', (message) => {
+    alert(message);
+})
