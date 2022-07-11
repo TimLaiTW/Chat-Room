@@ -16,8 +16,8 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password">
             <div class="button-row">
-                <button type="submit" class="auth-submit-btn" value="login">Login</button>
-                <button type="submit" class="auth-submit-btn" value="register">Register</button>
+                <button type="submit" class="btn auth-submit-btn" value="login">Login</button>
+                <button type="submit" class="btn auth-submit-btn" value="register">Register</button>
             </div>
         </form>
     </div>
@@ -25,12 +25,12 @@
     <div id="chat-room-section" style="display: none;">
         <header>
             <h1 class="chat-room-title">Chat Room</h1>
-            <button type="submit" class="logout-btn">Logout</button>
+            <button type="submit" class="btn logout-btn">Logout</button>
         </header>
-        <ul id="message-display"></ul>
+        <div id="message-display"></div>
         <form>
             <input type="text" name="message-input" id="message-input">
-            <button type="submit">Post</button>
+            <button type="submit" class="btn post-msg-btn">Post</button>
         </form>
     </div>
     <script type="module" src="./app.js"></script>
