@@ -55,6 +55,10 @@ io.on('connection', (socket) => {
 
         if(userId != -1){
             socket.emit('switchPage', userId);
+            
+            // Get and show the historical messages.
+            const messages = await getMessages();
+            socket.emit('showMessage', messages);
         }
     });
 
@@ -67,13 +71,11 @@ io.on('connection', (socket) => {
     socket.on('handlePostMsg', async (msgData) => {
         const message = msgData.message;
         const userId = msgData.userId;
-        await saveMsg(message, userId);
-
         const userName = await getUserName(userId);
+        await saveMsg(message, userId, userName);
+
         const messages = await getMessages();
-        msgData.userName = userName;
-        msgData.timeStamp = messages[messages.length - 1].timeStamp;
-        io.emit('showNewMsg', (msgData));
+        io.emit('showNewMsg', (messages[messages.length - 1]));
     });
 });
 
@@ -119,7 +121,7 @@ async function getUserName(userId){
 
 // Get messages.
 async function getMessages(){
-    const query = 'SELECT message, userId, timeStamp FROM messages';
+    const query = 'SELECT message, userId, name, timeStamp FROM messages';
     return parsingResult(await mysqlQuery(query));
 }
 
@@ -131,8 +133,8 @@ async function usernameHasBeenUsed(username){
 }
 
 // Save message to DB.
-async function saveMsg(message, userId){
-    const query = `INSERT INTO messages(message, userId, timeStamp) values('${message}', ${userId}, now())`;
+async function saveMsg(message, userId, userName){
+    const query = `INSERT INTO messages(message, userId, name, timeStamp) values('${message}', ${userId}, '${userName}', now())`;
     await mysqlQuery(query);
 }
 

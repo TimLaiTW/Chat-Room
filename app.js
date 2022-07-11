@@ -23,7 +23,7 @@ $(function() {
         socket.emit('logout');
     });
 
-    // TODO: Post messages.
+    // Post messages.
     $('.post-msg-btn').click(function(e){
         e.preventDefault();
         const message = $('#message-input');
@@ -55,14 +55,16 @@ socket.on('switchPage', (id) => {
     }
 });
 
+// Display historical message.
+socket.on('showMessage', (messagesData) => {
+    messagesData.forEach(msgData => {
+        displayMsg(msgData);
+    });
+});
+
 // Display new message.
 socket.on('showNewMsg', (msgData) => {
-    let author = msgData.userName;
-    if(msgData.userId === userId){
-        author = 'Me';
-    }
-
-    $('#message-display').append(msgTemplate(author, msgData.message, msgData.timeStamp));
+    displayMsg(msgData);
 });
 
 // Warning 
@@ -79,4 +81,13 @@ function msgTemplate(author, message, timeStamp){
             </div>
             <div class="msg-content">${message}</div>
         </div>`;
+}
+
+function displayMsg(msgData){
+    let author = msgData.name;
+    if(msgData.userId === userId){
+        author = 'Me';
+    }
+
+    $('#message-display').append(msgTemplate(author, msgData.message, msgData.timeStamp));
 }
