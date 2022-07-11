@@ -24,6 +24,17 @@ $(function() {
     });
 
     // TODO: Post messages.
+    $('.post-msg-btn').click(function(e){
+        e.preventDefault();
+        const message = $('#message-input');
+        if(message.val()){
+            const msgData = { message: message.val(), userId};
+            socket.emit('handlePostMsg', msgData);
+            message.val('');
+        }else {
+            alert('Message should not be empty.');
+        }
+    })
 
 });
 
@@ -31,7 +42,7 @@ $(function() {
 socket.on('switchPage', (id) => {
     userId = id;
 
-    // login || register if the user id is set.
+    // login or register if the user id is set.
     if(userId !== -1){
         $('#welcome-section').hide();
         $('#chat-room-section').show();
@@ -44,7 +55,28 @@ socket.on('switchPage', (id) => {
     }
 });
 
+// Display new message.
+socket.on('showNewMsg', (msgData) => {
+    let author = msgData.userName;
+    if(msgData.userId === userId){
+        author = 'Me';
+    }
+
+    $('#message-display').append(msgTemplate(author, msgData.message, msgData.timeStamp));
+});
+
 // Warning 
 socket.on('warning', (message) => {
     alert(message);
 })
+
+function msgTemplate(author, message, timeStamp){
+    return `
+        <div class="message">
+            <div class="msg-header">
+                <div class="msg-header-author">${author}</div>
+                <div class="msg-header-timestamp">${timeStamp}</div>
+            </div>
+            <div class="msg-content">${message}</div>
+        </div>`;
+}

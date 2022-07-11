@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
         }else {
             userId = await register(socket, userInfo.username, userInfo.password);
         }
-        // TODO: Just for testing. change the user id.
+
         if(userId != -1){
             socket.emit('switchPage', userId);
         }
@@ -63,9 +63,18 @@ io.on('connection', (socket) => {
         socket.emit('switchPage', -1);
     });
 
-    // TODO: Post Messages func.
+    // Post Msg.
+    socket.on('handlePostMsg', async (msgData) => {
+        const message = msgData.message;
+        const userId = msgData.userId;
+        await saveMsg(message, userId);
 
-    // TODO: Warning func.
+        const userName = await getUserName(userId);
+        const messages = await getMessages();
+        msgData.userName = userName;
+        msgData.timeStamp = messages[messages.length - 1].timeStamp;
+        io.emit('showNewMsg', (msgData));
+    });
 });
 
 async function login(socket, username, password){
@@ -93,8 +102,7 @@ async function register(socket, username, password){
 // Return user id if exists.
 async function getUserId(username, password){
     const query = `SELECT id FROM users WHERE name = '${username}' and password = '${password}'`;
-    const result = await mysqlQuery(query);
-    const parseResult = JSON.parse(JSON.stringify(result));
+    const parseResult = parsingResult(await mysqlQuery(query));
     if(parseResult[0] != undefined){
         return parseResult[0].id;
     }
@@ -102,11 +110,30 @@ async function getUserId(username, password){
     return -1;
 }
 
+// Return user name.
+async function getUserName(userId){
+    const query = `SELECT name FROM users WHERE id = '${userId}'`;
+    const parseResult = parsingResult(await mysqlQuery(query));
+    return parseResult[0].name;
+}
+
+// Get messages.
+async function getMessages(){
+    const query = 'SELECT message, userId, timeStamp FROM messages';
+    return parsingResult(await mysqlQuery(query));
+}
+
 // Check if the username was used.
 async function usernameHasBeenUsed(username){
     const query = `SELECT name FROM users WHERE name = '${username}'`;
     const result = await mysqlQuery(query);
     return result.length > 0 ? true : false;
+}
+
+// Save message to DB.
+async function saveMsg(message, userId){
+    const query = `INSERT INTO messages(message, userId, timeStamp) values('${message}', ${userId}, now())`;
+    await mysqlQuery(query);
 }
 
 // Processing mysql query.
@@ -117,4 +144,8 @@ const mysqlQuery = (query) => {
             resolve(result);
         })
     });
+}
+
+function parsingResult(result){
+    return JSON.parse(JSON.stringify(result));
 }
