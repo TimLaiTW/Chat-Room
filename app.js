@@ -7,18 +7,21 @@ $(function() {
     // Authentication with username and pwd.
     $('.auth-submit-btn').click(function(e){
         e.preventDefault();
-        const username = $('#username').val();
-        const password = $('#password').val();
+        const username = $('#username');
+        const password = $('#password');
         const action = $(this).attr('value');
         const userInfo = {
-            username, password, action
+            username: username.val(), password: password.val(), action
         };
-        
         socket.emit('authentication', userInfo);
+        username.val('');
+        password.val('');
     });
 
     // User logout.
     $('.logout-btn').click(function(e){
+        // Clear historical messages.
+        $('#message-display')[0].textContent = '';
         e.preventDefault();
         socket.emit('logout');
     });

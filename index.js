@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
 
         if(userId != -1){
             socket.emit('switchPage', userId);
-            
+
             // Get and show the historical messages.
             const messages = await getMessages();
             socket.emit('showMessage', messages);
