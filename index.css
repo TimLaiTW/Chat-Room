@@ -29,8 +29,25 @@ body {
     box-sizing: border-box;
     width: 100%;
     margin-top: 16px;
+    padding: 8px;
   }
 
   .post-msg-btn {
     width: 100%;
+  }
+
+  .message {
+    border:1px solid;
+    border-radius: 5px;
+    padding: 8px;
+    margin: 8px 0;
+  }
+  
+  .msg-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .msg-header-author {
+    font-weight: bold;
   }
