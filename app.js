@@ -20,8 +20,10 @@ $(function() {
 
     // User logout.
     $('.logout-btn').click(function(e){
+
         // Clear historical messages.
         $('#message-display')[0].textContent = '';
+        
         e.preventDefault();
         socket.emit('logout');
     });
@@ -29,6 +31,7 @@ $(function() {
     // Post messages.
     $('.post-msg-btn').click(function(e){
         e.preventDefault();
+        
         const message = $('#message-input');
         if(message.val()){
             const msgData = { message: message.val(), userId};
@@ -38,7 +41,6 @@ $(function() {
             alert('Message should not be empty.');
         }
     })
-
 });
 
 // Change pages
